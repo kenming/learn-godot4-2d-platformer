@@ -12,49 +12,54 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public float Jump_height {get; set; } = -100f; 
 
-	private Vector2 velocity ;
-	//private Vector2 position ;
+	private Vector2 _velocity ;
+	private Vector2 _position ;
 	private AnimatedSprite2D _animatedSprite;
-	//private CollisionShape2D _collisionShape;
+	private CollisionShape2D _collisionShape;
 
 	// movement states.
-	private bool Is_attacking;
-	private bool Is_climbing;
+	private bool _isAttacking;
+	private bool _isClimbing;
 
 	public override void _Ready()
 	{
-		Is_climbing = false;
-		Is_attacking = false;
-		velocity = Velocity;
+		_isClimbing = false;
+		_isAttacking = false;
+		_velocity = Velocity;
 		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
-		//_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
+		_position = _collisionShape.Position;
 		// register the event handle function.
 		_animatedSprite.AnimationFinished += OnAnimationFinished;
 	}
 	public override void _PhysicsProcess(double delta)
 	{
-		// GD.Print(delta);		
+		// GD.Print(delta);	
+		
 		// vertical movement velocity (down)
-		velocity.Y += Gravity * (float)delta;
+		_velocity.Y += Gravity * (float)delta;
 		
 		// horizontal movement processing (left, right)
-		Horizontal_movement(velocity);
+		Horizontal_movement();
 		
 		// applies movement
-		Velocity = velocity;
+		Velocity = _velocity;
 		MoveAndSlide();
 
 		// applies animations
-		if (!Is_attacking)
+		if (!_isAttacking)
+		{			
 			Player_animations();
+			_collisionShape.Position = _position;
+		}
     }
 
-	private void Horizontal_movement(Vector2 velocity)
+	private void Horizontal_movement()
 	{
 		// if keys are pressed it will return 1 for ui_right, -1 for ui_left, and 0 for neither
 		var Horizontal_input = Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left");
         // horizontal velocity which moves player left or right based on input 
-        velocity.X = Horizontal_input * Speed;
+        _velocity.X = Horizontal_input * Speed;
     }
 
 	// ref. https://docs.godotengine.org/en/4.1/tutorials/2d/2d_sprite_animation.html
@@ -66,7 +71,7 @@ public partial class Player : CharacterBody2D
 			//GD.Print("ui_left.");
 			_animatedSprite.FlipH = true;
 			_animatedSprite.Play("run");
-			//position.X = 7f;
+			_position.X = 7f;
 			//_collisionShape.Position = position;
 		}
 
@@ -76,7 +81,7 @@ public partial class Player : CharacterBody2D
 			//GD.Print("ui_right.");
 			_animatedSprite.FlipH = false;
 			_animatedSprite.Play("run");
-			//position.X = -7f;
+			_position.X = -7f;
 			//_collisionShape.Position = position;
 		}
 
@@ -96,7 +101,7 @@ public partial class Player : CharacterBody2D
 			if (eventKey.IsActionPressed("ui_attack"))
 			{
 				//GD.Print("Attack Key pressed.");
-				Is_attacking = true;
+				_isAttacking = true;
 				_animatedSprite.Play("attack");			
 			} 
 
@@ -104,23 +109,23 @@ public partial class Player : CharacterBody2D
 			if (eventKey.IsActionPressed("ui_jump") && IsOnFloor())
 			{
 				//GD.Print("Jump Key pressed.");
-				velocity.Y = Jump_height;
+				_velocity.Y = Jump_height;
 				_animatedSprite.Play("jump");			
 			} 
 
 			// on climbing ladders
-			if (Is_climbing)
+			if (_isClimbing)
 				if (eventKey.IsActionPressed("ui_up"))
 					{
 						//GD.Print("Climb Up Key pressed.");
 						_animatedSprite.Play("climb");
 						Gravity = 100f;
-						velocity.Y = -200;
+						_velocity.Y = -200;
 					}
 				else	// reset gravity
 					{
 						Gravity = 200;
-						Is_climbing = false;
+						_isClimbing = false;
 					}
 		}
 		           
@@ -131,7 +136,7 @@ public partial class Player : CharacterBody2D
 	private void OnAnimationFinished()
 	{
 		// Timer Delay : ToSignal(GetTree().CreateTimer(1.5f), "timeout");
-		Is_attacking = false;
-		Is_climbing = false;
+		_isAttacking = false;
+		_isClimbing = false;
 	}
 }

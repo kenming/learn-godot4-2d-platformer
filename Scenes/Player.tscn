@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://c5j00wy2rk72v" path="res://Assets/Kings and Pigs/Sprites/01-King Human/Run (78x58).png" id="5_2b4p1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hpv43"]
+size = Vector2(13.8328, 22.8547)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_00aku"]
 atlas = ExtResource("2_ardp8")
@@ -127,13 +128,13 @@ region = Rect2(780, 0, 78, 58)
 atlas = ExtResource("4_prcsj")
 region = Rect2(0, 0, 78, 58)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_3npxu"]
-atlas = ExtResource("5_2b4p1")
-region = Rect2(0, 0, 78, 58)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_qjrsv"]
 atlas = ExtResource("5_2b4p1")
 region = Rect2(78, 0, 78, 58)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3npxu"]
+atlas = ExtResource("5_2b4p1")
+region = Rect2(0, 0, 78, 58)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_aq8f6"]
 atlas = ExtResource("5_2b4p1")
@@ -280,10 +281,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_3npxu")
+"texture": SubResource("AtlasTexture_qjrsv")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_qjrsv")
+"texture": SubResource("AtlasTexture_3npxu")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_aq8f6")
@@ -309,14 +310,13 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D"]
-position = Vector2(138, 48)
+position = Vector2(-5, 3)
 script = ExtResource("1_gjwpv")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-2, 1)
+position = Vector2(-7, 0)
 shape = SubResource("RectangleShape2D_hpv43")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-position = Vector2(5, 0)
 sprite_frames = SubResource("SpriteFrames_bh8wt")
-animation = &"attack"
+animation = &"run"
