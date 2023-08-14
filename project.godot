@@ -14,6 +14,10 @@ config/name="learn-godot4-2d-platformer"
 run/main_scene="res://Scenes/Main.tscn"
 config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 
+[autoload]
+
+PlayerVariables="*res://Scripts/PlayerVariables.cs"
+
 [display]
 
 window/size/mode=2

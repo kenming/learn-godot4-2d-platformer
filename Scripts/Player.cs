@@ -6,11 +6,11 @@ public partial class Player : CharacterBody2D
 {
 	// player movement variables
 	[Export]
-	public float Speed {get; set; } = 100.0f;
+	public float Speed {get; set; } = 150.0f;
 	[Export]
-	public float Gravity {get; set; } = 200.0f; 
+	public float Gravity {get; set; } = 100.0f; 
 	[Export]
-	public float Jump_height {get; set; } = -100f; 
+	public float Jump_height {get; set; } = -60f; 
 
 	private Vector2 _velocity ;
 	private Vector2 _position ;
@@ -18,13 +18,14 @@ public partial class Player : CharacterBody2D
 	private CollisionShape2D _collisionShape;
 
 	// movement states.
-	private bool _isAttacking;
-	private bool _isClimbing;
-
+	// ref. https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html
+	private PlayerVariables _playerVariables;
 	public override void _Ready()
-	{
-		_isClimbing = false;
-		_isAttacking = false;
+	{	
+		// GD.Print("Ready : ");
+		// get a singleton from AutoLoad.
+		_playerVariables  = 
+			GetNode<PlayerVariables>("/root/PlayerVariables");
 		_velocity = Velocity;
 		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
@@ -34,7 +35,7 @@ public partial class Player : CharacterBody2D
 	}
 	public override void _PhysicsProcess(double delta)
 	{
-		// GD.Print(delta);	
+		// GD.Print(delta);
 		
 		// vertical movement velocity (down)
 		_velocity.Y += Gravity * (float)delta;
@@ -47,7 +48,7 @@ public partial class Player : CharacterBody2D
 		MoveAndSlide();
 
 		// applies animations
-		if (!_isAttacking)
+		if (!_playerVariables.IsAttacking || !_playerVariables.IsClimbing)
 		{			
 			Player_animations();
 			_collisionShape.Position = _position;
@@ -72,7 +73,6 @@ public partial class Player : CharacterBody2D
 			_animatedSprite.FlipH = true;
 			_animatedSprite.Play("run");
 			_position.X = 7f;
-			//_collisionShape.Position = position;
 		}
 
 		// on right (add is_action_just_released so you continue running after jumping)
@@ -82,7 +82,6 @@ public partial class Player : CharacterBody2D
 			_animatedSprite.FlipH = false;
 			_animatedSprite.Play("run");
 			_position.X = -7f;
-			//_collisionShape.Position = position;
 		}
 
 		// on idle if nothing is being pressed
@@ -100,8 +99,8 @@ public partial class Player : CharacterBody2D
 			// on attack
 			if (eventKey.IsActionPressed("ui_attack"))
 			{
-				//GD.Print("Attack Key pressed.");
-				_isAttacking = true;
+				// GD.Print("Attack Key pressed.");
+				_playerVariables.IsAttacking = true;
 				_animatedSprite.Play("attack");			
 			} 
 
@@ -112,31 +111,33 @@ public partial class Player : CharacterBody2D
 				_velocity.Y = Jump_height;
 				_animatedSprite.Play("jump");			
 			} 
-
-			// on climbing ladders
-			if (_isClimbing)
+			
+			// on climbing ladders			
+			if (_playerVariables.IsClimbing)
+			{
 				if (eventKey.IsActionPressed("ui_up"))
-					{
-						//GD.Print("Climb Up Key pressed.");
-						_animatedSprite.Play("climb");
-						Gravity = 100f;
-						_velocity.Y = -200;
-					}
-				else	// reset gravity
-					{
-						Gravity = 200;
-						_isClimbing = false;
-					}
-		}
-		           
+				{
+					//GD.Print("Climb Up Key pressed.");
+					_animatedSprite.Play("climb");
+					Gravity = 50f;
+					_velocity.Y = -60f;
+				}				
+			}
+			else	// reset gravity
+				{
+					Gravity = 100f;
+					_playerVariables.IsClimbing = false;
+				}
+		}		           
 	}
 
 	// ref. https://docs.godotengine.org/en/stable/getting_started/step_by_step/signals.html#doc-signals
-	// trigger event to handle.
+	// reset animation variables.
 	private void OnAnimationFinished()
 	{
+		//GD.Print("On Animation Finished.");
 		// Timer Delay : ToSignal(GetTree().CreateTimer(1.5f), "timeout");
-		_isAttacking = false;
-		_isClimbing = false;
+		_playerVariables.IsAttacking = false;
+		//_playerVariables.IsClimbing = false;
 	}
 }
