@@ -5,7 +5,7 @@ namespace GameDev.Scripts;
 public partial class Platform : Area2D
 {
 	private State _currentState;
-	Timer _timer;		// Timer Node.
+	private Timer _timer;		// Timer Node.
 
 	// movement position and movement progress value
 	private Vector2 _position;

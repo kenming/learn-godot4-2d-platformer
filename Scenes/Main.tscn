@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://defkqjmya3qan"]
+[gd_scene load_steps=10 format=3 uid="uid://defkqjmya3qan"]
 
 [ext_resource type="PackedScene" uid="uid://brk6qrfmktd6v" path="res://Scenes/Player.tscn" id="1_x6wr8"]
 [ext_resource type="Texture2D" uid="uid://sufk471liay6" path="res://Assets/Kings and Pigs/Sprites/14-TileSets/Decorations (32x32).png" id="2_77sns"]
 [ext_resource type="Texture2D" uid="uid://1bdvd6pt2ktd" path="res://Assets/Kings and Pigs/Sprites/14-TileSets/Terrain (32x32).png" id="2_yf0lh"]
 [ext_resource type="PackedScene" uid="uid://dc1y8q5kdrfhr" path="res://Scenes/Ladder.tscn" id="3_h0iw0"]
+[ext_resource type="PackedScene" uid="uid://dguph2207gcks" path="res://Scenes/Bomb.tscn" id="5_05ags"]
+[ext_resource type="PackedScene" uid="uid://dkm52mfbrnfpx" path="res://Scenes/Wall.tscn" id="6_abje0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_31tpi"]
 texture = ExtResource("2_yf0lh")
@@ -2061,3 +2063,13 @@ layer_2/tile_data = PackedInt32Array(2424846, 262146, 6, 2490382, 262146, 7, 255
 
 [node name="Player" parent="." instance=ExtResource("1_x6wr8")]
 position = Vector2(80, 628)
+
+[node name="Bomb" parent="." instance=ExtResource("5_05ags")]
+position = Vector2(1018, 492)
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="Wall" parent="Walls" instance=ExtResource("6_abje0")]
+
+[node name="Wall2" parent="Walls" instance=ExtResource("6_abje0")]
+position = Vector2(1152, 0)
