@@ -10,7 +10,7 @@ public partial class Player : CharacterBody2D
 	[Export]
 	public float Gravity {get; set; } = 100.0f; 
 	[Export]
-	public float Jump_height {get; set; } = -60f; 
+	public float Jump_height {get; set; } = -65f; 
 
 	private Vector2 _velocity ;
 	private Vector2 _position ;
@@ -26,10 +26,12 @@ public partial class Player : CharacterBody2D
 		// get a singleton from AutoLoad.
 		_playerVariables  = 
 			GetNode<PlayerVariables>("/root/PlayerVariables");
-		_velocity = Velocity;
+		
+		_velocity = Velocity;		
 		_animatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
 		_position = _collisionShape.Position;
+
 		// register the event handle function.
 		_animatedSprite.AnimationFinished += OnAnimationFinished;
 	}
@@ -48,7 +50,7 @@ public partial class Player : CharacterBody2D
 		MoveAndSlide();
 
 		// applies animations
-		if (!_playerVariables.IsAttacking || !_playerVariables.IsClimbing)
+		if (!_playerVariables.IsAttacking && (!_playerVariables.IsClimbing))
 		{			
 			Player_animations();
 			_collisionShape.Position = _position;
@@ -67,7 +69,7 @@ public partial class Player : CharacterBody2D
 	private void Player_animations()
 	{		
 		// on left (add is_action_just_released so you continue running after jumping)
-		if (Input.IsActionPressed("ui_left") || Input.IsActionJustReleased("ui_jump"))
+		if (Input.IsActionPressed("ui_left") && (!_playerVariables.IsJumping))
 		{
 			//GD.Print("ui_left.");
 			_animatedSprite.FlipH = true;
@@ -76,7 +78,7 @@ public partial class Player : CharacterBody2D
 		}
 
 		// on right (add is_action_just_released so you continue running after jumping)
-		if (Input.IsActionPressed("ui_right") || Input.IsActionJustReleased("ui_jump"))
+		if (Input.IsActionPressed("ui_right") && (!_playerVariables.IsJumping))
 		{
 			//GD.Print("ui_right.");
 			_animatedSprite.FlipH = false;
@@ -121,12 +123,14 @@ public partial class Player : CharacterBody2D
 					_animatedSprite.Play("climb");
 					Gravity = 50f;
 					_velocity.Y = -60f;
+					_playerVariables.IsJumping = true;
 				}				
 			}
 			else	// reset gravity
 				{
 					Gravity = 100f;
 					_playerVariables.IsClimbing = false;
+					_playerVariables.IsJumping = false;
 				}
 		}		           
 	}
@@ -135,9 +139,7 @@ public partial class Player : CharacterBody2D
 	// reset animation variables.
 	private void OnAnimationFinished()
 	{
-		//GD.Print("On Animation Finished.");
-		// Timer Delay : ToSignal(GetTree().CreateTimer(1.5f), "timeout");
-		_playerVariables.IsAttacking = false;
-		//_playerVariables.IsClimbing = false;
+		//GD.Print("On Animation Finished.");		
+		_playerVariables.IsAttacking = false;		
 	}
 }
